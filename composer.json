@@ -1,0 +1,31 @@
+{
+  "name": "TwentyTwo/code-analyser",
+  "type": "library",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Magnus Reiß",
+      "email": "info@magnus-reiss.de"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "TwentyTwo\\CodeAnalyser\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "TwentyTwo\\CodeAnalyser\\Tests\\": "tests/"
+    }
+  },
+  "require": {
+    "php": ">=7.1",
+    "symfony/console": "^3.3",
+    "symfony/process": "^3.3",
+    "symfony/var-dumper": "^3.3",
+    "symfony/finder": "^3.3"
+  },
+  "bin": [
+    "code-analyser"
+  ]
+}
