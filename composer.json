@@ -15,7 +15,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "TwentyTwo\\CodeAnalyser\\Tests\\": "tests/"
+      "TwentyTwo\\CodeAnalyser\\Tests\\": "tests"
     }
   },
   "require": {

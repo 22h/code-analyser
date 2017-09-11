@@ -5,8 +5,26 @@ With this repository I want to solve some problems of my own projects. For examp
 
 PHP Unit doesn't need namespaces and therefore they are often wrong.
 
-## example output
-```bash
+## commands
+search exceptions in all autoload folders
+```
+php bin/code-analyser code-analyser:exceptions
+```
+search exceptions in vendor folder recursive
+```
+php bin/code-analyser code-analyser:exceptions -f vendor
+```
+search incorrect namespaces in autoload folders
+```
+php bin/code-analyser code-analyser:namespaces
+```
+search incorrect namespaces in vendor folder recursive
+```
+php bin/code-analyser code-analyser:namespaces -f vendor
+```
+
+## example output namespace
+```shell
 $ php code-analyser code-analyser:namespaces
  
 Lookup autoload paths
@@ -16,7 +34,7 @@ Lookup autoload paths
   env    namespace                       folder
  ------ ------------------------------- --------
   prod   TwentyTwo\CodeAnalyser\         src
-  dev    TwentyTwo\CodeAnalyser\Tests\   tests/
+  dev    TwentyTwo\CodeAnalyser\Tests\   tests
  ------ ------------------------------- --------
  
 Search matching files
@@ -43,4 +61,56 @@ List incorrect namespaces
   Current Namespace   TwentyTwo\CodeAnalyser2\Tests
   New Namespace       TwentyTwo\CodeAnalyser\Tests
  ------------------- -------------------------------
+```
+
+## example output exceptions
+```shell
+$ php code-analyser code-analyser:exceptions
+ 
+Lookup autoload paths
+---------------------
+ 
+ ------ ------------------------------- --------
+  env    namespace                       folder
+ ------ ------------------------------- --------
+  prod   TwentyTwo\CodeAnalyser\         src
+  dev    TwentyTwo\CodeAnalyser\Tests\   tests
+ ------ ------------------------------- --------
+ 
+Search matching files
+---------------------
+ 
+ Find 12 matching files in directories
+ 
+Search exceptions
+-----------------
+ 
+ 12/12 [============================] 100%
+ 
+List founded exceptions
+-----------------------
+ 
+ ------------------------------- ----------------------------------
+  exception                       files
+ ------------------------------- ----------------------------------
+  ComposerFileNotFoundException   src\Composer.php
+  ComposerFileNotFoundException   tests/\Test\Wrang.php
+  FileNotFoundException           src\Autoload\CheckFile.php
+  FileNotFoundException           src\FindExceptions\CheckFile.php
+  Exception                       tests/\Test\Wrang.php
+ ------------------------------- ----------------------------------
+ 
+List grouped exceptions
+-----------------------
+ 
+ ------------------------------- -------
+  exception                       count
+ ------------------------------- -------
+  ComposerFileNotFoundException   2
+  FileNotFoundException           2
+  Exception                       1
+ ------------------------------- -------
+ 
+ [OK] find 5 exceptions
+ 
 ```

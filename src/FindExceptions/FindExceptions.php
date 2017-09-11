@@ -3,6 +3,7 @@
 namespace TwentyTwo\CodeAnalyser\FindExceptions;
 
 use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -38,7 +39,14 @@ class FindExceptions extends Command
     {
         $this
             ->setName('code-analyser:exceptions')
-            ->setDescription('find all exception calls in project');
+            ->setDescription('Find all exception calls in project')
+            ->addOption(
+                'directory',
+                'd',
+                InputArgument::OPTIONAL,
+                'tests a folder recursive',
+                null
+            );
     }
 
     /**
@@ -54,7 +62,12 @@ class FindExceptions extends Command
         $this->composer = new Composer();
         $this->finder = new Finder();
 
-        $this->addAutoloadPaths();
+        if (!is_null($input->getOption('directory'))) {
+            $this->finder->addAutoloadPath($input->getOption('directory'));
+        } else {
+            $this->addAutoloadPaths();
+        }
+
         $this->searchFiles();
         $this->checkFiles();
     }
@@ -84,7 +97,7 @@ class FindExceptions extends Command
     protected function searchFiles()
     {
         $this->io->section('Search matching files');
-        $this->io->text('Find '. $this->finder->countFiles(). ' matching files in directories');
+        $this->io->text('Find '.$this->finder->countFiles().' matching files in directories');
     }
 
     protected function checkFiles()
@@ -100,12 +113,12 @@ class FindExceptions extends Command
 
             $foundExceptions = $checkFile->findExceptions();
 
-            if(array_key_exists(1, $foundExceptions)) {
+            if (array_key_exists(1, $foundExceptions)) {
                 foreach ($foundExceptions[1] as $exception) {
-                    if(array_key_exists($exception, $exceptions)) {
+                    if (array_key_exists($exception, $exceptions)) {
                         $exceptions[$exception]['count']++;
                         $exceptions[$exception]['files'][] = (string)$file;
-                    }else {
+                    } else {
                         $exceptions[$exception] = [];
                         $exceptions[$exception]['count'] = 1;
                         $exceptions[$exception]['files'] = [];
@@ -120,9 +133,12 @@ class FindExceptions extends Command
         $this->io->progressFinish();
         $this->io->section('List founded exceptions');
 
-        uasort($exceptions, function($a, $b) {
-            return ($a['count'] > $b['count']) ? -1 : 1;
-        });
+        uasort(
+            $exceptions,
+            function ($a, $b) {
+                return ($a['count'] > $b['count']) ? -1 : 1;
+            }
+        );
 
         $ioTable = [];
         foreach ($exceptions as $exceptionName => $exception) {
@@ -130,7 +146,7 @@ class FindExceptions extends Command
             foreach ($exception['files'] as $file) {
                 $ioTable[] = [
                     $exceptionName,
-                    $file
+                    $file,
                 ];
             }
         }
@@ -140,10 +156,10 @@ class FindExceptions extends Command
 
         $ioTable = [];
         foreach ($exceptions as $exceptionName => $exception) {
-                $ioTable[] = [
-                    $exceptionName,
-                    $exception['count']
-                ];
+            $ioTable[] = [
+                $exceptionName,
+                $exception['count'],
+            ];
         }
 
         $this->io->table(array('exception', 'count'), $ioTable);
