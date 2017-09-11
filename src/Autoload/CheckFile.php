@@ -66,9 +66,6 @@ class CheckFile
     {
         $namespace = $this->analyseNamespace();
 
-        echo 'FilePath: '.$this->filePath.PHP_EOL;
-        echo 'Namespace 1: '.$namespace.PHP_EOL;
-
         $composer = new Composer();
 
         $autoload = $composer->findAutoloadMatch($this->filePath);
@@ -80,7 +77,11 @@ class CheckFile
 
         $newNamespace = substr($newNamespace, 0, strrpos($newNamespace, '\\'));
 
-        echo 'Namespace 2: '.$newNamespace.PHP_EOL;
+        return [
+            'file_path' =>   $this->filePath,
+            'current_namespace' => $namespace,
+            'new_namespace' => $newNamespace
+        ];
     }
 
     /**

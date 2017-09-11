@@ -1,9 +1,12 @@
 #!/usr/bin/env php
 <?php
 
+use Symfony\Component\Console\Application;
+
 require __DIR__.'/vendor/autoload.php';
 
-$check = new \TwentyTwo\CodeAnalyser\Autoload\Check();
-$check->checkAll();
+$application = new Application();
+$application->add(new TwentyTwo\CodeAnalyser\Autoload\Autoload());
+$application->run();
 
 exit(0);
