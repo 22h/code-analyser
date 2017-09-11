@@ -3,14 +3,14 @@
 namespace TwentyTwo\CodeAnalyser\Exception;
 
 /**
- * FileNotFound
+ * ComposerJsonNotFound
  *
  * @author Magnus Reiß <info@magnus-reiss.de>
  */
-class FileNotFound extends \Exception
+class ComposerFileNotFoundException extends \Exception
 {
     /**
-     * FileNotFound constructor.
+     * ComposerJsonNotFound constructor.
      *
      * @param string $message
      * @param int    $code

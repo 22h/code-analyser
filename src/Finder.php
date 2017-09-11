@@ -1,6 +1,6 @@
 <?php
 
-namespace TwentyTwo\CodeAnalyser\Autoload;
+namespace TwentyTwo\CodeAnalyser;
 
 /**
  * Finder

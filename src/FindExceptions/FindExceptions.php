@@ -1,6 +1,6 @@
 <?php
 
-namespace TwentyTwo\CodeAnalyser\Autoload;
+namespace TwentyTwo\CodeAnalyser\FindExceptions;
 
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -14,7 +14,7 @@ use TwentyTwo\CodeAnalyser\Finder;
  *
  * @author Magnus Reiß <info@magnus-reiss.de>
  */
-class Autoload extends Command
+class FindExceptions extends Command
 {
     /**
      * @var Composer
@@ -37,10 +37,8 @@ class Autoload extends Command
     protected function configure()
     {
         $this
-            ->setName('code-analyser:namespaces')
-            ->setDescription('Check all namespaces in project')
-            ->setHelp('Check all namespaces in folders who are defined in composer.json autoload');
-
+            ->setName('code-analyser:exceptions')
+            ->setDescription('find all exception calls in project');
     }
 
     /**
@@ -91,30 +89,66 @@ class Autoload extends Command
 
     protected function checkFiles()
     {
-        $this->io->section('Search incorrect namespaces');
+        $this->io->section('Search exceptions');
 
         $this->io->progressStart($this->finder->countFiles());
 
-        $incorrectNamespaces = [];
-
+        $exceptions = [];
+        $i = 0;
         foreach ($this->finder->foundedFiles() as $file) {
             $checkFile = new CheckFile($file);
 
-            $reconstructNamespace = $checkFile->reconstructNamespace();
-            if($reconstructNamespace['current_namespace'] !== $reconstructNamespace['new_namespace']) {
-                $incorrectNamespaces[] = $reconstructNamespace;
+            $foundExceptions = $checkFile->findExceptions();
+
+            if(array_key_exists(1, $foundExceptions)) {
+                foreach ($foundExceptions[1] as $exception) {
+                    if(array_key_exists($exception, $exceptions)) {
+                        $exceptions[$exception]['count']++;
+                        $exceptions[$exception]['files'][] = (string)$file;
+                    }else {
+                        $exceptions[$exception] = [];
+                        $exceptions[$exception]['count'] = 1;
+                        $exceptions[$exception]['files'] = [];
+                        $exceptions[$exception]['files'][] = (string)$file;
+                    }
+                    $i++;
+                }
             }
+
             $this->io->progressAdvance();
         }
         $this->io->progressFinish();
-        $this->io->section('List incorrect namespaces');
+        $this->io->section('List founded exceptions');
 
-        foreach ($incorrectNamespaces as $incorrectNamespace) {
-            $this->io->table([], [
-                ['File', $incorrectNamespace['file_path']],
-                ['Current Namespace', $incorrectNamespace['current_namespace']],
-                ['New Namespace', $incorrectNamespace['new_namespace']],
-            ]);
+        uasort($exceptions, function($a, $b) {
+            return ($a['count'] > $b['count']) ? -1 : 1;
+        });
+
+        $ioTable = [];
+        foreach ($exceptions as $exceptionName => $exception) {
+
+            foreach ($exception['files'] as $file) {
+                $ioTable[] = [
+                    $exceptionName,
+                    $file
+                ];
+            }
         }
+        $this->io->table(array('exception', 'files'), $ioTable);
+
+        $this->io->section('List grouped exceptions');
+
+        $ioTable = [];
+        foreach ($exceptions as $exceptionName => $exception) {
+                $ioTable[] = [
+                    $exceptionName,
+                    $exception['count']
+                ];
+        }
+
+        $this->io->table(array('exception', 'count'), $ioTable);
+
+        $this->io->success('find '.$i.' exceptions');
     }
+
 }

@@ -2,7 +2,7 @@
 
 namespace TwentyTwo\CodeAnalyser;
 
-use TwentyTwo\CodeAnalyser\Exception\ComposerFileNotFound;
+use TwentyTwo\CodeAnalyser\Exception\ComposerFileNotFoundException;
 
 /**
  * Composer
@@ -41,14 +41,14 @@ class Composer
     /**
      * loadComposerFile
      *
-     * @throws ComposerFileNotFound
+     * @throws ComposerFileNotFoundException
      * @return void
      */
     protected function loadComposerFile()
     {
         $composerContent = file_get_contents($this->path);
         if ($composerContent === false) {
-            throw new ComposerFileNotFound('can not find composer.json');
+            throw new ComposerFileNotFoundException('can not find composer.json');
         }
 
         self::$content = json_decode($composerContent, 1);

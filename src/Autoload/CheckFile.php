@@ -3,7 +3,7 @@
 namespace TwentyTwo\CodeAnalyser\Autoload;
 
 use TwentyTwo\CodeAnalyser\Composer;
-use TwentyTwo\CodeAnalyser\Exception\FileNotFound;
+use TwentyTwo\CodeAnalyser\Exception\FileNotFoundException;
 
 /**
  * Check
@@ -37,14 +37,14 @@ class CheckFile
     /**
      * loadFile
      *
-     * @throws FileNotFound
+     * @throws FileNotFoundException
      * @return void
      */
     protected function loadFile()
     {
         $content = file($this->filePath, FILE_IGNORE_NEW_LINES);
         if ($content === false) {
-            throw new FileNotFound('can not find '.$this->filePath);
+            throw new FileNotFoundException('can not find '.$this->filePath);
         }
         $this->content = $content;
     }
@@ -54,7 +54,7 @@ class CheckFile
      *
      * @return string
      */
-    public function analyseNamespace():string
+    public function analyseNamespace(): string
     {
         return $this->findFirstByPattern('@namespace (.*);@i');
     }
@@ -78,9 +78,9 @@ class CheckFile
         $newNamespace = substr($newNamespace, 0, strrpos($newNamespace, '\\'));
 
         return [
-            'file_path' =>   $this->filePath,
+            'file_path' => $this->filePath,
             'current_namespace' => $namespace,
-            'new_namespace' => $newNamespace
+            'new_namespace' => $newNamespace,
         ];
     }
 
@@ -98,9 +98,10 @@ class CheckFile
             }
         }
 
-        if(array_key_exists(1, $hits)) {
+        if (array_key_exists(1, $hits)) {
             return $hits[1];
         }
+
         return '';
     }
 

@@ -2,6 +2,8 @@
 
 namespace TwentyTwo\CodeAnalyserA\Tests\Test;
 
+use TwentyTwo\CodeAnalyser\Exception\ComposerFileNotFoundException;
+
 /**
  * Wrang
  *
@@ -9,5 +11,15 @@ namespace TwentyTwo\CodeAnalyserA\Tests\Test;
  */
 class Wrang
 {
+
+    public function testException()
+    {
+        throw new \Exception();
+    }
+
+    public function anotherTest()
+    {
+        throw new ComposerFileNotFoundException();
+    }
 
 }
