@@ -14,19 +14,15 @@ composer require 22h/code-analyser --dev
 ## commands
 search exceptions in all autoload folders
 ```
-php bin/code-analyser code-analyser:exceptions
+bin/code-analyser code-analyser:exceptions
 ```
 search exceptions in vendor folder recursive
 ```
-php bin/code-analyser code-analyser:exceptions -f vendor
+bin/code-analyser code-analyser:exceptions -d vendor
 ```
 search incorrect namespaces in autoload folders
 ```
-php bin/code-analyser code-analyser:namespaces
-```
-search incorrect namespaces in vendor folder recursive
-```
-php bin/code-analyser code-analyser:namespaces -f vendor
+bin/code-analyser code-analyser:namespaces
 ```
 
 ## example output namespace

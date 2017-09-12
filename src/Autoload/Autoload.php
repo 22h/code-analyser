@@ -3,7 +3,6 @@
 namespace TwentyTwo\CodeAnalyser\Autoload;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
@@ -41,15 +40,7 @@ class Autoload extends Command
         $this
             ->setName('code-analyser:namespaces')
             ->setDescription('Check all namespaces in project')
-            ->setHelp('Check all namespaces in folders who are defined in composer.json autoload')
-            ->addOption(
-                'directory',
-                'd',
-                InputArgument::OPTIONAL,
-                'tests a folder recursive',
-                null
-            );
-
+            ->setHelp('Check all namespaces in folders who are defined in composer.json autoload');
     }
 
     /**
