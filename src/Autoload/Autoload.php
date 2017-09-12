@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TwentyTwo\CodeAnalyser\Composer;
+use TwentyTwo\CodeAnalyser\Exception\FileNotFoundException;
 use TwentyTwo\CodeAnalyser\Finder;
 
 /**
@@ -108,13 +109,20 @@ class Autoload extends Command
         $this->io->progressStart($this->finder->countFiles());
 
         $incorrectNamespaces = [];
+        $errors = [];
 
         foreach ($this->finder->foundedFiles() as $file) {
-            $checkFile = new CheckFile($file);
 
-            $reconstructNamespace = $checkFile->reconstructNamespace();
-            if ($reconstructNamespace['current_namespace'] !== $reconstructNamespace['new_namespace']) {
-                $incorrectNamespaces[] = $reconstructNamespace;
+            try {
+                $checkFile = new CheckFile($file);
+
+                $reconstructNamespace = $checkFile->reconstructNamespace();
+                if ($reconstructNamespace['current_namespace'] !== $reconstructNamespace['new_namespace']) {
+                    $incorrectNamespaces[] = $reconstructNamespace;
+
+                }
+            } catch (FileNotFoundException $e) {
+                $errors[] = $e->getMessage();
             }
             $this->io->progressAdvance();
         }
@@ -129,6 +137,13 @@ class Autoload extends Command
                     ['Current Namespace', $incorrectNamespace['current_namespace']],
                     ['New Namespace', $incorrectNamespace['new_namespace']],
                 ]
+            );
+        }
+
+        if (count($errors) !== 0) {
+            $this->io->error('there are '.count($errors).' errors');
+            $this->io->listing(
+                $errors
             );
         }
     }

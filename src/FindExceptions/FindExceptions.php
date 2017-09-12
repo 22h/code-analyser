@@ -8,6 +8,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use TwentyTwo\CodeAnalyser\Composer;
+use TwentyTwo\CodeAnalyser\Exception\FileNotFoundException;
 use TwentyTwo\CodeAnalyser\Finder;
 
 /**
@@ -107,29 +108,36 @@ class FindExceptions extends Command
         $this->io->progressStart($this->finder->countFiles());
 
         $exceptions = [];
+        $errors = [];
         $i = 0;
+
         foreach ($this->finder->foundedFiles() as $file) {
-            $checkFile = new CheckFile($file);
 
-            $foundExceptions = $checkFile->findExceptions();
+            try {
+                $checkFile = new CheckFile($file);
+                $foundExceptions = $checkFile->findExceptions();
 
-            if (array_key_exists(1, $foundExceptions)) {
-                foreach ($foundExceptions[1] as $exception) {
-                    if (array_key_exists($exception, $exceptions)) {
-                        $exceptions[$exception]['count']++;
-                        $exceptions[$exception]['files'][] = (string)$file;
-                    } else {
-                        $exceptions[$exception] = [];
-                        $exceptions[$exception]['count'] = 1;
-                        $exceptions[$exception]['files'] = [];
-                        $exceptions[$exception]['files'][] = (string)$file;
+                if (array_key_exists(1, $foundExceptions)) {
+                    foreach ($foundExceptions[1] as $exception) {
+                        if (array_key_exists($exception, $exceptions)) {
+                            $exceptions[$exception]['count']++;
+                            $exceptions[$exception]['files'][] = (string)$file;
+                        } else {
+                            $exceptions[$exception] = [];
+                            $exceptions[$exception]['count'] = 1;
+                            $exceptions[$exception]['files'] = [];
+                            $exceptions[$exception]['files'][] = (string)$file;
+                        }
+                        $i++;
                     }
-                    $i++;
                 }
+            } catch (FileNotFoundException $e) {
+                $errors[] = $e->getMessage();
             }
 
             $this->io->progressAdvance();
         }
+
         $this->io->progressFinish();
         $this->io->section('List founded exceptions');
 
@@ -163,8 +171,13 @@ class FindExceptions extends Command
         }
 
         $this->io->table(array('exception', 'count'), $ioTable);
-
         $this->io->success('find '.$i.' exceptions');
-    }
 
+        if (count($errors) !== 0) {
+            $this->io->error('there are '.count($errors).' errors');
+            $this->io->listing(
+                $errors
+            );
+        }
+    }
 }

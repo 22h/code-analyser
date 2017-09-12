@@ -41,9 +41,9 @@ class CheckFile
      */
     protected function loadFile()
     {
-        $content = file_get_contents($this->filePath);
+        $content = @file_get_contents($this->filePath);
         if ($content === false) {
-            throw new FileNotFoundException('can not find '.$this->filePath);
+            throw new FileNotFoundException('can not open '.$this->filePath);
         }
         $this->content = $content;
     }
