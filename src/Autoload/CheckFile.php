@@ -42,9 +42,9 @@ class CheckFile
      */
     protected function loadFile()
     {
-        $content = file($this->filePath, FILE_IGNORE_NEW_LINES);
+        $content = @file($this->filePath, FILE_IGNORE_NEW_LINES);
         if ($content === false) {
-            throw new FileNotFoundException('can not find '.$this->filePath);
+            throw new FileNotFoundException('can not open '.$this->filePath);
         }
         $this->content = $content;
     }
