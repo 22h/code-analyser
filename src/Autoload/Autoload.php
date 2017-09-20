@@ -56,11 +56,7 @@ class Autoload extends Command
         $this->composer = new Composer();
         $this->finder = new Finder();
 
-        if (!is_null($input->getOption('directory'))) {
-            $this->finder->addAutoloadPath($input->getOption('directory'));
-        } else {
-            $this->addAutoloadPaths();
-        }
+        $this->addAutoloadPaths();
         $this->searchFiles();
         $this->checkFiles();
     }
